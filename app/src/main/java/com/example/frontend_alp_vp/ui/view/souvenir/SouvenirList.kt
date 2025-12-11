@@ -1,4 +1,4 @@
-package com.example.frontend_alp_vp.ui.view.kuliner
+package com.example.frontend_alp_vp.ui.view.souvenir
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -16,13 +16,13 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KulinerList() {
+fun SouvenirList() {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "Kuliner",
+                        "Toko Souvenir",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                     )
@@ -53,7 +53,7 @@ fun KulinerList() {
                 .padding(paddingValues)
         ) {
             items(6) { index ->
-                KulinerListCard()
+                SouvenirListCard()
             }
         }
     }
@@ -61,6 +61,6 @@ fun KulinerList() {
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
-fun KulinerListPreview() {
-    KulinerList()
+fun SouvenirListPreview() {
+    SouvenirList()
 }
