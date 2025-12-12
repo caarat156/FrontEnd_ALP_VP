@@ -69,7 +69,7 @@ fun pensiCard () {
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = "Rujak Cingur & Sop",
+                    text = "Parade Teater 2025",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black,
@@ -80,4 +80,10 @@ fun pensiCard () {
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun pensiCardPreview(){
+    pensiCard()
 }
