@@ -71,5 +71,11 @@ fun calendar(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
+@Composable
+fun calendarPreview() {
+    calendar(
+        onEventClick = {}
+    )
+}
 
