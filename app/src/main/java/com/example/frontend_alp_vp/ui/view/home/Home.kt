@@ -30,6 +30,7 @@ fun HomeView() {
             .fillMaxSize()
             .padding(16.dp),
     ) {
+        Spacer(modifier = Modifier.height(40.dp))
         Text(
             "Halo, ...",
             fontSize = 24.sp,
