@@ -2,6 +2,7 @@ package com.example.frontend_alp_vp.ui.view.pensi
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,11 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun pensiCard () {
+fun pensiCard(
+    title: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .width(160.dp)
-            .height(180.dp),
+            .height(180.dp)
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color(0xFFE8D4C4)
@@ -44,6 +50,7 @@ fun pensiCard () {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
+
             // Image
             Box(
                 modifier = Modifier
@@ -52,7 +59,6 @@ fun pensiCard () {
                     .background(Color(0xFFD4C4B4)),
                 contentAlignment = Alignment.Center
             ) {
-                // Placeholder untuk gambar
                 Text(
                     text = "📷",
                     fontSize = 40.sp,
@@ -60,20 +66,18 @@ fun pensiCard () {
                 )
             }
 
-            // Text
+            // Title
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFFE8D4C4))
                     .padding(horizontal = 12.dp, vertical = 10.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = "Parade Teater 2025",
+                    text = title,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black,
-                    textAlign = TextAlign.Start,
                     lineHeight = 16.sp,
                     maxLines = 2
                 )
@@ -82,8 +86,9 @@ fun pensiCard () {
     }
 }
 
-@Preview
-@Composable
-fun pensiCardPreview(){
-    pensiCard()
-}
+
+//@Preview
+//@Composable
+//fun pensiCardPreview(){
+//    pensiCard()
+//}
