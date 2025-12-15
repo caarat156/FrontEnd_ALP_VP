@@ -16,22 +16,42 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.text.font.FontWeight
+import androidx.navigation.NavController
 
 @Composable
-fun PensiDetailScreen() {
+fun PensiDetailScreen(
+    onBack: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Parade Teater 2025",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 12.dp)
+        ) {
+            IconButton(onClick = { onBack() }) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+
+            Text(
+                text = "Parade Teater 2025",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Box(
             modifier = Modifier
@@ -72,6 +92,7 @@ fun PensiDetailScreen() {
     }
 }
 
+
 @Composable
 fun TicketTimeItem(time: String) {
     Row(
@@ -96,6 +117,20 @@ fun TicketTimeItem(time: String) {
             shape = RoundedCornerShape(20.dp)
         ) {
             Text("Beli Tiket", fontSize = 12.sp)
+        }
+    }
+}
+
+@Composable
+fun PensiDetail(navController: NavController) {
+    MaterialTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            PensiDetailScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }

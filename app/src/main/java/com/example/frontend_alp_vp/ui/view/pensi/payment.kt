@@ -23,23 +23,42 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.navigation.NavController
 
 @Composable
-fun PaymentScreen() {
+fun PaymentScreen(
+    onBack: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(24.dp)
     ) {
 
-        Text(
-            text = "Pembayaran",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
+        // 🔙 BACK + TITLE
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
+            IconButton(onClick = { onBack() }) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
 
-        Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "Pembayaran",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         PaymentRow("Harga Tiket", "Rp. 75.000,-")
         PaymentRow("Jumlah Tiket", "1")
@@ -59,6 +78,7 @@ fun PaymentScreen() {
             modifier = Modifier
                 .fillMaxWidth(0.6f)
                 .height(50.dp)
+                .align(Alignment.CenterHorizontally)
         ) {
             Text(
                 text = "Bayar",
@@ -88,16 +108,21 @@ fun PaymentRow(
 }
 
 @Composable
-fun PaymentPage() {
+fun PaymentPage(navController: NavController) {
     MaterialTheme {
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            PaymentScreen()
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            PaymentScreen(
+                onBack = { navController.popBackStack() } // ⬅ balik ke detail
+            )
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Preview(showBackground = true)
 @Composable
 fun PaymentScreenPreview() {
-    PaymentPage()
+    PaymentScreen()
 }
