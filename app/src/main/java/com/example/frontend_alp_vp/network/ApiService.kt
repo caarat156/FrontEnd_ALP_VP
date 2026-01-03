@@ -19,16 +19,13 @@ interface ApiService {
     @POST("auth/register")
     fun register(@Body request: RegisterRequest): Call<RegisterResponse>
 
-    // Note: This is a SUSPEND function (good for Coroutines)
-    @GET("me")
-    suspend fun getProfile(
-        @Header("Authorization") token: String
-    ): UserResponse
+    // Matches router.get('/profile') inside authRoutes
+    @GET("auth/profile")  // <--- Most likely this one
+    suspend fun getProfile(@Header("Authorization") token: String): UserResponse
 
-    // Note: This is a CALL function (good for enqueue callbacks)
-    @PUT("profile")
-    fun updateProfile(
+    @PUT("auth/profile")
+    suspend fun updateProfile(
         @Header("Authorization") token: String,
         @Body updateData: Map<String, String>
-    ): Call<UserResponse>
+    ): UserResponse
 }

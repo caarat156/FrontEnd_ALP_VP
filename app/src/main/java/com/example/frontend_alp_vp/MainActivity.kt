@@ -11,16 +11,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.example.frontend_alp_vp.ui.navigation.AppNavigation // Import the new file
 import com.example.frontend_alp_vp.ui.theme.FrontEnd_ALP_VPTheme
-
-// [IMPORTANT] These imports now match your folder structure exactly
 import com.example.frontend_alp_vp.ui.view.MyBottomNavigationBar
-import com.example.frontend_alp_vp.ui.view.login.LoginView
-import com.example.frontend_alp_vp.ui.view.register.RegisterView
-import com.example.frontend_alp_vp.ui.view.splash.SplashView
 import com.example.frontend_alp_vp.ui.view.profile.EditProfileView
 
 class MainActivity : ComponentActivity() {
@@ -28,56 +21,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FrontEnd_ALP_VPTheme {
-                val navController = rememberNavController()
-
-                NavHost(navController = navController, startDestination = "splash") {
-
-                    // 1. Splash Screen
-                    composable("splash") {
-                        SplashView(
-                            onSplashFinished = {
-                                navController.navigate("login") {
-                                    popUpTo("splash") { inclusive = true }
-                                }
-                            }
-                        )
-                    }
-
-                    // 2. Login Screen
-                    composable("login") {
-                        LoginView(
-                            onNavigateToRegister = { navController.navigate("register") },
-                            onNavigateToHome = {
-                                navController.navigate("main_app") {
-                                    popUpTo("login") { inclusive = true }
-                                }
-                            }
-                        )
-                    }
-
-                    // 3. Register Screen
-                    composable("register") {
-                        RegisterView(
-                            onNavigateToLogin = { navController.popBackStack() }
-                        )
-                    }
-
-                    // 4. Main App (Home, Calendar, Profile, etc.)
-                    composable("main_app") {
-                        MainAppScreen(
-                            onLogout = {
-                                navController.navigate("login") {
-                                    popUpTo("main_app") { inclusive = true }
-                                }
-                            }
-                        )
-                    }
-                }
+                // The Activity now delegates everything to AppNavigation
+                AppNavigation()
             }
         }
     }
 }
 
+// Keep this helper function here for now, or move it to a new file "MainAppScreen.kt"
 @Composable
 fun MainAppScreen(onLogout: () -> Unit) {
     var currentRoute by remember { mutableStateOf("home") }

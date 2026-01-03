@@ -22,7 +22,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -36,23 +35,24 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.frontend_alp_vp.datastore.AuthenticationManager
 import com.example.frontend_alp_vp.network.RetrofitClient
-import com.example.frontend_alp_vp.model.UserResponse
-import com.example.frontend_alp_vp.ui.view.login.LoginView
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
-// --- VIEWMODEL ---
+// ==============================
+// 1. THE VIEWMODEL (Logic Only)
+// ==============================
 class EditProfileViewModel(application: Application) : AndroidViewModel(application) {
 
+    // Form Data
     var nama by mutableStateOf("")
     var username by mutableStateOf("")
     var email by mutableStateOf("")
     var password by mutableStateOf("")
     var nomorTelepon by mutableStateOf("")
-    var imageUri by mutableStateOf<Uri?>(null)
+
+    // Image Logic
+    var currentProfileUrl by mutableStateOf<String?>(null)
+    var newImageUri by mutableStateOf<Uri?>(null)
     var isLoading by mutableStateOf(false)
 
     init {
@@ -62,18 +62,44 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     private fun loadUserProfile() {
         viewModelScope.launch {
             isLoading = true
+            val context = getApplication<Application>().applicationContext
+
             try {
-                val context = getApplication<Application>().applicationContext
+                // DEBUG STEP 1
+                Toast.makeText(context, "1. Mencari Token...", Toast.LENGTH_SHORT).show()
+
                 val authManager = AuthenticationManager(context)
                 val savedToken = authManager.authToken.first()
 
-                if (savedToken != null) {
-                    val token = "Bearer $savedToken"
-                    // Assume standard call - adjust if your API differs
-                    // val response = RetrofitClient.instance.getProfile(token)
+                if (savedToken == null) {
+                    Toast.makeText(context, "Error: Token Kosong (Belum Login?)", Toast.LENGTH_LONG).show()
+                    return@launch
                 }
+
+                // DEBUG STEP 2
+                Toast.makeText(context, "2. Token Ditemukan! Mengambil Data...", Toast.LENGTH_SHORT).show()
+                val token = "Bearer $savedToken"
+
+                // DEBUG STEP 3: API Call
+                val response = RetrofitClient.instance.getProfile(token)
+
+                // DEBUG STEP 4: Check what we got
+                Toast.makeText(context, "3. API Sukses! Nama: ${response.data.name}", Toast.LENGTH_LONG).show()
+
+                val userData = response.data
+
+                // Fill the form
+                nama = userData.name
+                username = userData.username
+                email = userData.email
+                nomorTelepon = userData.phoneNumber ?: ""
+                currentProfileUrl = userData.profilePhoto
+
             } catch (e: Exception) {
-                println("Error loading profile: ${e.message}")
+                // THIS IS THE MOST IMPORTANT PART
+                // It will print the exact error on your screen
+                Toast.makeText(context, "GAGAL: ${e.message}", Toast.LENGTH_LONG).show()
+                e.printStackTrace() // Print to Logcat too
             } finally {
                 isLoading = false
             }
@@ -90,6 +116,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
 
                 if (savedToken != null) {
                     val token = "Bearer $savedToken"
+
                     val updateData = hashMapOf(
                         "name" to nama,
                         "username" to username,
@@ -100,42 +127,41 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
                         updateData["password"] = password
                     }
 
-                    RetrofitClient.instance.updateProfile(token, updateData).enqueue(object : Callback<UserResponse> {
-                        override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
-                            isLoading = false
-                            if (response.isSuccessful) {
-                                Toast.makeText(context, "Profil Berhasil Diupdate!", Toast.LENGTH_SHORT).show()
-                            } else {
-                                Toast.makeText(context, "Gagal Update: ${response.message()}", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                        override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                            isLoading = false
-                            Toast.makeText(context, "Error Jaringan: ${t.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    })
+                    try {
+                        // Call API directly (no .enqueue)
+                        RetrofitClient.instance.updateProfile(token, updateData)
+
+                        Toast.makeText(context, "Profil Berhasil Diupdate!", Toast.LENGTH_SHORT).show()
+                        loadUserProfile() // Refresh data
+
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Gagal Update: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             } catch (e: Exception) {
-                isLoading = false
                 Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                isLoading = false
             }
         }
     }
-}
+} // <--- END OF CLASS HERE
 
-// --- SCREEN ---
+// ==============================
+// 2. THE SCREEN (UI Only)
+// ==============================
 @Composable
 fun EditProfileView(
     viewModel: EditProfileViewModel = viewModel(),
     onNavigateBack: () -> Unit = {},
-    onLogout: () -> Unit // Navigation Callback
+    onLogout: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        viewModel.imageUri = uri
+        viewModel.newImageUri = uri
     }
 
     Column(
@@ -159,7 +185,6 @@ fun EditProfileView(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            // Logout Button
             Button(
                 onClick = { onLogout() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)),
@@ -180,15 +205,21 @@ fun EditProfileView(
                 .border(2.dp, MaterialTheme.colorScheme.tertiary, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            if (viewModel.imageUri != null) {
+            if (viewModel.newImageUri != null) {
                 AsyncImage(
-                    model = ImageRequest.Builder(context).data(viewModel.imageUri).crossfade(true).build(),
-                    contentDescription = "Profile Picture",
+                    model = ImageRequest.Builder(context).data(viewModel.newImageUri).crossfade(true).build(),
+                    contentDescription = "New Profile Picture",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else if (!viewModel.currentProfileUrl.isNullOrEmpty()) {
+                AsyncImage(
+                    model = ImageRequest.Builder(context).data(viewModel.currentProfileUrl).crossfade(true).build(),
+                    contentDescription = "Current Profile Picture",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
             } else {
-                // Placeholder icon if you have one, or simple text
                 Text("Foto")
             }
         }
@@ -220,7 +251,7 @@ fun EditProfileView(
     }
 }
 
-// Reuseable Components internal to this file
+// Internal Components
 @Composable
 fun ThemeButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Button(

@@ -2,29 +2,26 @@ package com.example.frontend_alp_vp.model
 
 import com.google.gson.annotations.SerializedName
 
-// --- LOGIN ---
+// --- LOGIN MODELS ---
 data class LoginRequest(
     val email: String,
     val password: String
 )
 
 data class LoginResponse(
-    val message: String,
-    val token: String,
-    val user: UserData?
+    @SerializedName("token") val token: String?,
+    @SerializedName("message") val message: String?
 )
 
-// --- REGISTER ---
+// --- REGISTER MODELS ---
 data class RegisterRequest(
     val name: String,
     val username: String,
     val email: String,
     val password: String,
-    @SerializedName("phone_number")
     val phoneNumber: String
 )
 
 data class RegisterResponse(
-    val message: String,
-    val user: UserData?
+    @SerializedName("message") val message: String?
 )
