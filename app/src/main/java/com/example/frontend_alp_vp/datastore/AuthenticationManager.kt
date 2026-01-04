@@ -7,7 +7,6 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-// This creates the storage file "user_prefs"
 private val Context.dataStore by preferencesDataStore("user_prefs")
 
 class AuthenticationManager(private val context: Context) {
@@ -15,20 +14,19 @@ class AuthenticationManager(private val context: Context) {
         private val TOKEN_KEY = stringPreferencesKey("auth_token")
     }
 
-    // Read the token (Flow updates automatically)
+    // UPDATED: Automatically removes quotes when reading
     val authToken: Flow<String?>
         get() = context.dataStore.data.map { preferences ->
-            preferences[TOKEN_KEY]
+            preferences[TOKEN_KEY]?.replace("\"", "")?.trim()
         }
 
-    // Save the token
+    // UPDATED: Automatically removes quotes when saving
     suspend fun saveToken(token: String) {
         context.dataStore.edit { preferences ->
-            preferences[TOKEN_KEY] = token
+            preferences[TOKEN_KEY] = token.replace("\"", "").trim()
         }
     }
 
-    // Delete token (Logout)
     suspend fun clearToken() {
         context.dataStore.edit { preferences ->
             preferences.remove(TOKEN_KEY)

@@ -19,6 +19,6 @@ data class UserData(
     @SerializedName("phoneNumber") // Standardized to snake_case for backend
     val phoneNumber: String?,
 
-    @SerializedName("profilePicture")
+    @SerializedName("profilePhoto")
     val profilePhoto: String?
 )

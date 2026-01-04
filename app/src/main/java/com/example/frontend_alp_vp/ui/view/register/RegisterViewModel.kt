@@ -6,12 +6,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.frontend_alp_vp.model.RegisterRequest
-import com.example.frontend_alp_vp.model.RegisterResponse
 import com.example.frontend_alp_vp.network.RetrofitClient
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.launch
 
 class RegisterViewModel : ViewModel() {
     // State variables
@@ -24,26 +22,30 @@ class RegisterViewModel : ViewModel() {
 
     fun register(context: Context, onSuccess: () -> Unit) {
         if (name.isNotEmpty() && username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && phoneNumber.isNotEmpty()) {
-            isLoading = true
 
-            val request = RegisterRequest(name, username, email, password, phoneNumber)
+            // 1. Start Coroutine
+            viewModelScope.launch {
+                isLoading = true
+                try {
+                    val request = RegisterRequest(name, username, email, password, phoneNumber)
 
-            RetrofitClient.instance.register(request).enqueue(object : Callback<RegisterResponse> {
-                override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+                    // 2. Call API directly (No .enqueue)
+                    // If the server returns 200 OK, this line succeeds.
+                    // If the server returns 400 or 500, it jumps to catch(e).
+                    val response = RetrofitClient.instance.register(request)
+
+                    // 3. Success!
+                    Toast.makeText(context, "Registrasi Berhasil! Silahkan Masuk", Toast.LENGTH_SHORT).show()
+                    onSuccess()
+
+                } catch (e: Exception) {
+                    // 4. Handle Errors (Network fail, or Server returned 400/500)
+                    Toast.makeText(context, "Gagal: ${e.message}", Toast.LENGTH_SHORT).show()
+                    e.printStackTrace()
+                } finally {
                     isLoading = false
-                    if (response.isSuccessful) {
-                        Toast.makeText(context, "Registrasi Berhasil! Silahkan Masuk", Toast.LENGTH_SHORT).show()
-                        onSuccess()
-                    } else {
-                        Toast.makeText(context, "Gagal: ${response.message()}", Toast.LENGTH_SHORT).show()
-                    }
                 }
-
-                override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                    isLoading = false
-                    Toast.makeText(context, "Error Jaringan: ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
+            }
         } else {
             Toast.makeText(context, "Mohon isi semua data", Toast.LENGTH_SHORT).show()
         }
