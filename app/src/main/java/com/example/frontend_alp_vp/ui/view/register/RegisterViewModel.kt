@@ -17,21 +17,18 @@ class RegisterViewModel : ViewModel() {
     var username by mutableStateOf("")
     var email by mutableStateOf("")
     var password by mutableStateOf("")
-    var phoneNumber by mutableStateOf("")
+    var phone_number by mutableStateOf("")
     var isLoading by mutableStateOf(false)
 
     fun register(context: Context, onSuccess: () -> Unit) {
-        if (name.isNotEmpty() && username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && phoneNumber.isNotEmpty()) {
+        if (name.isNotEmpty() && username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && phone_number.isNotEmpty()) {
 
             // 1. Start Coroutine
             viewModelScope.launch {
                 isLoading = true
                 try {
-                    val request = RegisterRequest(name, username, email, password, phoneNumber)
+                    val request = RegisterRequest(name, username, email, password, phone_number)
 
-                    // 2. Call API directly (No .enqueue)
-                    // If the server returns 200 OK, this line succeeds.
-                    // If the server returns 400 or 500, it jumps to catch(e).
                     val response = RetrofitClient.instance.register(request)
 
                     // 3. Success!

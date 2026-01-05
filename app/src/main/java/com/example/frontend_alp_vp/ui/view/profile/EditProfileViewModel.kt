@@ -28,7 +28,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
     var username by mutableStateOf("")
     var email by mutableStateOf("")
     var password by mutableStateOf("")
-    var nomorTelepon by mutableStateOf("")
+    var nomor_telepon by mutableStateOf("")
 
     // Image Logic
     var currentProfileUrl by mutableStateOf<String?>(null)
@@ -80,10 +80,10 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
                 nama = userData.name
                 username = userData.username
                 email = userData.email
-                nomorTelepon = userData.phoneNumber ?: ""
+                nomor_telepon = userData.phone_number ?: ""
 
-                if (userData.profilePhoto != null) {
-                    val rawPath = userData.profilePhoto
+                if (userData.profile_photo != null) {
+                    val rawPath = userData.profile_photo
 
                     // 1. Fix Windows slashes just in case
                     val cleanPath = rawPath.replace("\\", "/")
@@ -146,7 +146,7 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
                     map["name"] = createPart(nama)
                     map["username"] = createPart(username)
                     map["email"] = createPart(email)
-                    map["phoneNumber"] = createPart(nomorTelepon)
+                    map["phone_number"] = createPart(nomor_telepon)
 
                     if (password.isNotEmpty()) {
                         map["password"] = createPart(password)
@@ -184,7 +184,6 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
     }
-
     // ... Keep your uriToFile and other helpers as they were ...
     private fun uriToFile(selectedImg: Uri, context: Context): File {
         val contentResolver = context.contentResolver
@@ -196,7 +195,6 @@ class EditProfileViewModel(application: Application) : AndroidViewModel(applicat
         outputStream.close()
         return myFile
     }
-
     private fun File.asRequestBody(contentType: okhttp3.MediaType?): RequestBody {
         return RequestBody.create(contentType, this)
     }

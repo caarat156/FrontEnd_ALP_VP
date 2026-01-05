@@ -57,8 +57,8 @@ fun RegisterView(
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(text = "Nomor Telepon", fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 8.dp))
             OutlinedTextField(
-                value = viewModel.phoneNumber,
-                onValueChange = { viewModel.phoneNumber = it },
+                value = viewModel.phone_number,
+                onValueChange = { viewModel.phone_number = it },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),

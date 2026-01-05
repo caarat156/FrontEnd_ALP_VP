@@ -10,7 +10,8 @@ data class LoginRequest(
 
 data class LoginResponse(
     @SerializedName("token") val token: String?,
-    @SerializedName("message") val message: String?
+    @SerializedName("message") val message: String?,
+    @SerializedName("user") val user: UserData?
 )
 
 // --- REGISTER MODELS ---
@@ -19,7 +20,7 @@ data class RegisterRequest(
     val username: String,
     val email: String,
     val password: String,
-    val phoneNumber: String
+    val phone_number: String
 )
 
 data class RegisterResponse(

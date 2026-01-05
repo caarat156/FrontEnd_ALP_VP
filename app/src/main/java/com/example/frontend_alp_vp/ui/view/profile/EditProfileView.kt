@@ -96,7 +96,13 @@ fun EditProfileView(
                 )
             } else if (!viewModel.currentProfileUrl.isNullOrEmpty()) {
                 AsyncImage(
-                    model = ImageRequest.Builder(context).data(viewModel.currentProfileUrl).crossfade(true).build(),
+                    model = ImageRequest.Builder(context)
+                        .data(viewModel.currentProfileUrl)
+                        .crossfade(true)
+                        // Add these two lines to force refresh only if you have caching issues:
+                        .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
+                        .diskCachePolicy(coil.request.CachePolicy.DISABLED)
+                        .build(),
                     contentDescription = "Current Profile Picture",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
@@ -118,7 +124,7 @@ fun EditProfileView(
             ThemeTextField(label = "Username", value = viewModel.username, onValueChange = { viewModel.username = it })
             ThemeTextField(label = "Email", value = viewModel.email, onValueChange = { viewModel.email = it }, keyboardType = KeyboardType.Email)
             ThemeTextField(label = "Password", value = viewModel.password, onValueChange = { viewModel.password = it }, isPassword = true)
-            ThemeTextField(label = "Nomor Telpon", value = viewModel.nomorTelepon, onValueChange = { viewModel.nomorTelepon = it }, keyboardType = KeyboardType.Phone)
+            ThemeTextField(label = "Nomor Telpon", value = viewModel.nomor_telepon, onValueChange = { viewModel.nomor_telepon = it }, keyboardType = KeyboardType.Phone)
         }
 
         Spacer(modifier = Modifier.height(40.dp))

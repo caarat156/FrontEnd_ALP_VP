@@ -16,17 +16,17 @@ import okhttp3.RequestBody
 import retrofit2.http.*
 
 interface ApiService {
-    @POST("auth/login")
+    @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): LoginResponse
 
-    @POST("auth/register")
+    @POST("api/auth/register")
     suspend fun register(@Body request: RegisterRequest): RegisterResponse
 
-    @GET("auth/profile")
+    @GET("api/auth/profile")
     suspend fun getProfile(@Header("Authorization") token: String): UserResponse
 
     @Multipart
-    @PUT("auth/profile")
+    @PUT("api/auth/profile")
     suspend fun updateProfile(
         @Header("Authorization") token: String,
         @PartMap data: Map<String, @JvmSuppressWildcards RequestBody>,
