@@ -27,6 +27,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun pensiCard(
@@ -86,9 +89,28 @@ fun pensiCard(
     }
 }
 
+fun formatTimeFromIso(isoString: String): String {
+    return try {
+        // 1. Parse string ISO dari Backend
+        val parsedTime = ZonedDateTime.parse(isoString)
 
-//@Preview
-//@Composable
-//fun pensiCardPreview(){
-//    pensiCard()
-//}
+        // 2. Tentukan format output yang diinginkan (HH:mm = 24 jam, hh:mm a = 12 jam AM/PM)
+        val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
+
+        // 3. Kembalikan hasil format
+        parsedTime.format(formatter)
+    } catch (e: Exception) {
+        // Jika error (misal data kosong), kembalikan string aslinya atau "-"
+        isoString
+    }
+}
+
+
+@Preview
+@Composable
+fun PensiCardPreview() {
+    pensiCard(
+        title = "Judul Acara Pensi yang Sangat Seru dan Menarik",
+        modifier = Modifier.padding(16.dp)
+    )
+}

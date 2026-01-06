@@ -16,4 +16,8 @@ class PensiRepository {
     suspend fun getHistory(token: String) = api.getHistory("Bearer $token")
 
     suspend fun getCalendar(year: Int, month: Int) = api.getCalendar(year, month)
+
+    suspend fun getBookingDetail(token: String, bookingId: Int) =
+        api.getBookingDetail("Bearer $token", bookingId)
+
 }
