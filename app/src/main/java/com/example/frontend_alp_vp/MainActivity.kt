@@ -22,6 +22,8 @@ import com.example.frontend_alp_vp.ui.view.MyBottomNavigationBar
 import com.example.frontend_alp_vp.ui.view.profile.EditProfileView
 import com.example.frontend_alp_vp.ui.view.profile.ProfileScreen
 import com.example.frontend_alp_vp.ui.view.profile.ProfileViewModel
+import com.example.frontend_alp_vp.ui.view.reels.ReelsScreen
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +61,7 @@ fun MainAppScreen(onLogout: () -> Unit) {
             when (currentRoute) {
                 "home" -> PlaceholderScreen("Home Page")
                 "calendar" -> PlaceholderScreen("Calendar Page")
-                "reels" -> PlaceholderScreen("Reels Page")
+                "reels" -> ReelsScreen()
                 "history" -> PlaceholderScreen("History Page")
 
                 // 2. FIXED: Initialize ProfileViewModel with Factory and pass it

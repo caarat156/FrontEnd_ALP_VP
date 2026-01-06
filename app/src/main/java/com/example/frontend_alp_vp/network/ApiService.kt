@@ -38,6 +38,9 @@ interface ApiService {
     @GET("api/reels/me")
     suspend fun getMyReels(): Response<ReelResponse>
 
+    // Add this inside your interface
+    @GET("api/reels") // Ensure this matches your backend route for "Get All Reels"
+    suspend fun getAllReels(): Response<ReelResponse>
 
 
 }
