@@ -8,7 +8,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState // PENTING: Tambahan import
+import androidx.compose.runtime.getValue      // PENTING: Tambahan import
+import androidx.compose.runtime.remember      // PENTING: Tambahan import
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext // PENTING: Tambahan import
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.frontend_alp_vp.ui.theme.FrontEnd_ALP_VPTheme
 import com.example.frontend_alp_vp.ui.view.pensi.*
+// import com.example.frontend_alp_vp.UserPreferences // Pastikan file UserPreferences.kt sudah dibuat
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +40,22 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    val userToken = userPreferences.getToken().first()
+    // 1. Ambil Context saat ini (diperlukan untuk DataStore)
+    val context = LocalContext.current
+
+    // 2. Inisialisasi UserPreferences (gunakan remember agar tidak dibuat ulang terus menerus)
+    // Pastikan Anda sudah membuat file UserPreferences.kt seperti instruksi sebelumnya!
+    val userPreferences = remember { UserPreferences(context) }
+
+    // 3. Ambil token secara reaktif (Real-time update)
+    // collectAsState mengubah Flow data menjadi State yang dimengerti Compose
+    val userTokenState by userPreferences.getToken().collectAsState(initial = null)
+
+    // 4. Logika Token (Fallback untuk Testing)
+    // Jika token di DataStore masih kosong (belum login), pakai token hardcode dari Postman.
+    // NANTI SAAT FITUR LOGIN JADI: Hapus bagian `?: "TOKEN_..."`
+    val userToken = userTokenState ?: "MASUKKAN_TOKEN_DARI_POSTMAN_DISINI"
+
     val userId = 1 // Ganti sesuai ID user di database
 
     NavHost(navController = navController, startDestination = "pensi_list") {
