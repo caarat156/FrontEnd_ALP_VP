@@ -20,7 +20,7 @@ sealed class BottomNavItem(
     object Calendar : BottomNavItem("calendar", R.drawable.calendarnav, R.drawable.calendarnavactive, "Calendar")
     object Reels : BottomNavItem("reels", R.drawable.reelsnav, R.drawable.reelsnavactive, "Reels")
     object History : BottomNavItem("history", R.drawable.historynav, R.drawable.historynavactive, "History")
-    object Profile : BottomNavItem("edit_profile", R.drawable.profilenav, R.drawable.profilenavactive, "Profile")
+    object Profile : BottomNavItem("profile", R.drawable.profilenav, R.drawable.profilenavactive, "Profile")
 }
 
 @Composable

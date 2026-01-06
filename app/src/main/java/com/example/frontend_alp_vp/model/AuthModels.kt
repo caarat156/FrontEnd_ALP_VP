@@ -26,3 +26,4 @@ data class RegisterRequest(
 data class RegisterResponse(
     @SerializedName("message") val message: String?
 )
+
