@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 // This matches the "user" object inside your JSON responses
 data class UserData(
-    @SerializedName("userId")
+    @SerializedName("user_id")
     val id: Int,
 
     @SerializedName("name")
