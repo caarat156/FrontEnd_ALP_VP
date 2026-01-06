@@ -61,7 +61,7 @@ fun CalendarPage(viewModel: PensiViewModel = viewModel()) {
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text(pensi.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                                Text("${schedule.startTime} - ${schedule.endTime}", fontSize = 12.sp, color = Color(0xFFC49A7A))
+                                Text("${formatTimeFromIso(schedule.startTime)} - ${formatTimeFromIso(schedule.endTime)}", fontSize = 12.sp, color = Color(0xFFC49A7A))
                                 Text(pensi.venueAddress ?: "", fontSize = 12.sp, color = Color.Gray)
                             }
                         }

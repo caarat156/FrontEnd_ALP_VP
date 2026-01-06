@@ -89,7 +89,7 @@ fun ScheduleItem(schedule: PensiSchedule, onBuy: () -> Unit) {
         ) {
             Column {
                 Text(schedule.date, style = MaterialTheme.typography.bodyMedium)
-                Text("${schedule.startTime} - ${schedule.endTime}", style = MaterialTheme.typography.bodySmall)
+                Text("${formatTimeFromIso(schedule.startTime)} - ${formatTimeFromIso(schedule.endTime)} WIB", style = MaterialTheme.typography.bodySmall)
                 Text("Rp ${schedule.price.toInt()}", style = MaterialTheme.typography.titleMedium, color = Color(0xFFC8A27A))
             }
             Button(onClick = onBuy, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC8A27A))) {
