@@ -14,6 +14,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.frontend_alp_vp.ui.theme.FrontEnd_ALP_VPTheme
+import com.example.frontend_alp_vp.ui.view.pensi.CalendarPage
+import com.example.frontend_alp_vp.ui.view.pensi.HistoryDetailPage
+import com.example.frontend_alp_vp.ui.view.pensi.HistoryPage
 import com.example.frontend_alp_vp.ui.view.pensi.PaymentPage
 import com.example.frontend_alp_vp.ui.view.pensi.PensiDetailPage
 import com.example.frontend_alp_vp.ui.view.pensi.PensiListPage
@@ -72,6 +75,21 @@ fun AppNavigation() {
 
             // Pastikan kamu sudah punya file PaymentPage.kt
             PaymentPage(navController, pId, sId)
+        }
+
+        composable("history_list") {
+            HistoryPage(navController, userToken = "TOKEN_USER", userId = 1)
+        }
+
+        composable("history_detail/{bookingId}",
+            arguments = listOf(navArgument("bookingId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("bookingId") ?: 0
+            HistoryDetailPage(navController, id, userToken = "TOKEN_USER")
+        }
+
+        composable("calendar") {
+            CalendarPage()
         }
     }
 }

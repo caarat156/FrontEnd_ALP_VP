@@ -3,6 +3,7 @@ package com.example.frontend_alp_vp.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.frontend_alp_vp.model.BookingHistory
 import com.example.frontend_alp_vp.model.BookingRequest
 import com.example.frontend_alp_vp.model.Pensi
 import com.example.frontend_alp_vp.model.PensiSchedule
@@ -82,17 +83,42 @@ class PensiViewModel : ViewModel() {
 
     // ... (Fungsi loadPensiList, loadPensiDetail TETAP ADA) ...
 
-    fun loadHistory() {
+    // Tambahkan variable state baru
+    private val _historyList = MutableStateFlow<List<BookingHistory>>(emptyList())
+    val historyList: StateFlow<List<BookingHistory>> = _historyList.asStateFlow()
+
+    private val _selectedBooking = MutableStateFlow<BookingHistory?>(null)
+    val selectedBooking: StateFlow<BookingHistory?> = _selectedBooking.asStateFlow()
+
+    // Fungsi Load History
+    fun loadHistory(token: String) {
+        viewModelScope.launch {
+            _uiState.value = UiState.Loading
+            try {
+                val response = repository.getUserHistory(token)
+                if (response.success) {
+                    _historyList.value = response.data
+                    _uiState.value = UiState.Success("History loaded")
+                } else {
+                    _uiState.value = UiState.Error(response.message)
+                }
+            } catch (e: Exception) {
+                _uiState.value = UiState.Error(e.message ?: "Failed load history")
+            }
+        }
+    }
+
+    // Fungsi Load Booking Detail
+    fun loadBookingDetail(token: String, bookingId: Int) {
         viewModelScope.launch {
             try {
-                val response = repository.getHistory(userToken)
-                _historyList.value = response.data
+                val response = repository.getBookingDetail(token, bookingId)
+                _selectedBooking.value = response.data
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
     }
-
     fun loadCalendar() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -126,6 +152,7 @@ class PensiViewModel : ViewModel() {
             }
         }
     }
+
 }
 
 sealed class UiState {

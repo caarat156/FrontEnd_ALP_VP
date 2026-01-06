@@ -33,4 +33,18 @@ interface PensiApiService {
         @Query("year") year: Int,
         @Query("month") month: Int
     ): PensiResponse<List<CalendarDate>>
+
+
+    // HISTORY: Get All User History
+    @GET("api/payment/history")
+    suspend fun getUserHistory(
+        @Header("Authorization") token: String
+    ): PaymentResponseWrapper<List<BookingHistory>>
+
+    // HISTORY DETAIL: Get One Booking
+    @GET("api/payment/booking/{id}")
+    suspend fun getBookingDetail(
+        @Header("Authorization") token: String,
+        @Path("id") bookingId: Int
+    ): PaymentResponseWrapper<BookingHistory>
 }
