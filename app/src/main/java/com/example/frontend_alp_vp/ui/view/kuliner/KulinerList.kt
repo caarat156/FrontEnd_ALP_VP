@@ -34,7 +34,7 @@ fun KulinerList(
             TopAppBar(
                 title = {
                     Text(
-                        "Toko Souvenir",
+                        "Kuliner",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                     )
