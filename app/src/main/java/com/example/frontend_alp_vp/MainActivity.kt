@@ -18,26 +18,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.frontend_alp_vp.UserPreferences
 import com.example.frontend_alp_vp.ui.theme.FrontEnd_ALP_VPTheme
 import com.example.frontend_alp_vp.ui.view.home.HomeView
 import com.example.frontend_alp_vp.ui.view.kuliner.KulinerDetail
 import com.example.frontend_alp_vp.ui.view.kuliner.KulinerList
 import com.example.frontend_alp_vp.ui.view.souvenir.SouvenirDetail
+import com.example.frontend_alp_vp.ui.view.souvenir.SouvenirList
 import com.example.frontend_alp_vp.ui.view.wisata.WisataDetail
 import com.example.frontend_alp_vp.ui.view.wisata.WisataList
-import com.example.frontend_alp_vp.ui.viewmodel.PlaceViewModel
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.Coil
-import com.example.frontend_alp_vp.ui.view.review.AddReview
-import com.example.frontend_alp_vp.ui.view.souvenir.SouvenirList
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inisialisasi ImageLoader untuk mendukung format SVG (penting untuk ikon)
+        // Inisialisasi ImageLoader untuk mendukung format SVG
         val imageLoader = ImageLoader.Builder(this)
             .components { add(SvgDecoder.Factory()) }
             .build()
@@ -59,41 +56,54 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    // Inisialisasi UserPreferences untuk mengelola sesi/token
+    // Inisialisasi UserPreferences
     val userPreferences = remember { UserPreferences(context) }
-    val userTokenState by userPreferences.authToken.collectAsState(initial = null)
+    // Menggunakan fungsi getToken() yang tersedia di UserPreferences.kt
+    val userTokenState by userPreferences.getToken().collectAsState(initial = null)
 
-    // Token fallback untuk keperluan development/testing
-    val userToken = userTokenState ?: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-
-    // Di dalam NavHost pada MainActivity.kt
     NavHost(navController = navController, startDestination = "home") {
 
         composable("home") {
-            HomeView(navController) // Tambahkan navController agar Home bisa pindah halaman
+            HomeView(navController)
         }
 
         composable("wisata") {
-            WisataList(navController, viewModel())
+            WisataList(navController = navController, viewModel = viewModel())
         }
 
         composable("kuliner") {
-            KulinerList(navController, viewModel())
-        }
-        composable("souvenir") {
-            SouvenirList(navController, viewModel())
+            KulinerList(navController = navController, viewModel = viewModel())
         }
 
-        // Gunakan rute tunggal yang cerdas untuk semua detail
+        composable("souvenir") {
+            SouvenirList(navController = navController, viewModel = viewModel())
+        }
+
+        // Jalur Detail Wisata
         composable(
-            route = "detail/{placeId}",
+            route = "wisataDetail/{placeId}",
             arguments = listOf(navArgument("placeId") { type = NavType.IntType })
         ) { backStackEntry ->
             val placeId = backStackEntry.arguments?.getInt("placeId") ?: 0
-            // Karena kita tidak tahu kategorinya dari URL ini,
-            // Anda bisa mengarahkan ke satu view detail umum atau
-            // sesuaikan dengan logika di tiap ListCard (lihat poin 2)
             WisataDetail(placeId = placeId, navController = navController)
+        }
+
+        // Jalur Detail Kuliner
+        composable(
+            route = "kulinerDetail/{placeId}",
+            arguments = listOf(navArgument("placeId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val placeId = backStackEntry.arguments?.getInt("placeId") ?: 0
+            KulinerDetail(placeId = placeId, navController = navController)
+        }
+
+        // Jalur Detail Souvenir
+        composable(
+            route = "souvenirDetail/{placeId}",
+            arguments = listOf(navArgument("placeId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val placeId = backStackEntry.arguments?.getInt("placeId") ?: 0
+            SouvenirDetail(placeId = placeId, navController = navController)
         }
     }
 }

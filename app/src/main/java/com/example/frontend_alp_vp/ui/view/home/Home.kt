@@ -1,11 +1,13 @@
 package com.example.frontend_alp_vp.ui.view.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable // PASTIKAN ADA INI
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,11 +22,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController // PASTIKAN ADA INI
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.example.frontend_alp_vp.ui.viewmodel.PlaceViewModel
 
 @Composable
-fun HomeView(navController: NavController) { // Tambahkan parameter navController
+fun HomeView(
+    navController: NavController,
+    placeViewModel: PlaceViewModel = viewModel()
+) {
     var searchText by remember { mutableStateOf("") }
+
+    // Mengambil data dari ViewModel
+    val places = placeViewModel.places
+
+    // Logika Randomize: Mengacak data setiap kali places berubah
+    val randomPlaces = remember(places) {
+        places.shuffled().take(10)
+    }
+
+    // Trigger ambil data saat layar dibuka
+    LaunchedEffect(Unit) {
+        placeViewModel.loadPlaces()
+    }
 
     Column(
         modifier = Modifier
@@ -33,14 +53,23 @@ fun HomeView(navController: NavController) { // Tambahkan parameter navControlle
     ) {
         Spacer(modifier = Modifier.height(40.dp))
         Text(
-            "Halo, ...",
+            "Halo, Pengguna",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // ... Bagian Search Bar (tetap sama) ...
+        // Search Bar
+        OutlinedTextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            placeholder = { Text("Cari") },
+            modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+            shape = RoundedCornerShape(24.dp),
+            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) }
+        )
 
+        // Kategori Box
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -49,76 +78,62 @@ fun HomeView(navController: NavController) { // Tambahkan parameter navControlle
                 .padding(16.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    CategoryItem(
-                        icon = "🎵",
-                        label = "Pentas Seni",
-                        modifier = Modifier.weight(1f),
-                        onClick = { /* rute belum ada di MainActivity */ }
-                    )
-                    CategoryItem(
-                        icon = "🏖️",
-                        label = "Tempat Wisata",
-                        modifier = Modifier.weight(1f),
-                        onClick = { navController.navigate("wisata") }
-                    )
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    CategoryItem("🎵", "Pentas Seni", Modifier.weight(1f)) { /* Rute Pensi */ }
+                    CategoryItem("🏖️", "Wisata", Modifier.weight(1f)) { navController.navigate("wisata") }
                 }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    CategoryItem(
-                        icon = "🍴",
-                        label = "Kuliner",
-                        modifier = Modifier.weight(1f),
-                        onClick = { navController.navigate("kuliner") }
-                    )
-                    CategoryItem(
-                        icon = "🛍️",
-                        label = "Toko Souvenir",
-                        modifier = Modifier.weight(1f),
-                        onClick = {navController.navigate("souvenir") }
-                    )
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    CategoryItem("🍴", "Kuliner", Modifier.weight(1f)) { navController.navigate("kuliner") }
+                    CategoryItem("🛍️", "Souvenir", Modifier.weight(1f)) { navController.navigate("souvenir") }
                 }
             }
         }
 
-        // ... Bagian "Untuk Kamu" (tetap sama) ...
+        Text(
+            "Untuk kamu",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(top = 24.dp, bottom = 12.dp)
+        )
+
+        // Horizontal Row - Data Acak
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            items(randomPlaces) { place ->
+                // Pastikan HomeCard Anda menerima parameter 'place'
+                HomeCard(place = place, onClick = {
+                    navController.navigate("detail/${place.place_id}")
+                })
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Grid Bawah - Data Acak Berbeda
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.weight(1f)
+        ) {
+            items(randomPlaces.reversed()) { place ->
+                HomeCardd(place = place, onClick = {
+                    navController.navigate("detail/${place.place_id}")
+                })
+            }
+        }
     }
 }
 
 @Composable
-fun CategoryItem(
-    icon: String,
-    label: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
+fun CategoryItem(icon: String, label: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
     Column(
-        modifier = modifier
-            .clickable { onClick() } // Menghubungkan klik ke navigasi
-            .padding(8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = modifier.clickable { onClick() }.padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier = Modifier
-                .size(60.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFD4A574)),
+            modifier = Modifier.size(60.dp).clip(CircleShape).background(Color(0xFFD4A574)),
             contentAlignment = Alignment.Center
-        ) {
-            Text(text = icon, fontSize = 28.sp)
-        }
-        Text(
-            text = label,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black
-        )
+        ) { Text(icon, fontSize = 28.sp) }
+        Text(label, fontSize = 14.sp, fontWeight = FontWeight.Medium)
     }
 }
