@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.frontend_alp_vp.ui.model.PlaceData
+import com.example.frontend_alp_vp.ui.navigation.Route
 
 @Composable
 fun SouvenirListCard(
@@ -30,7 +31,7 @@ fun SouvenirListCard(
             .width(160.dp)
             .height(200.dp)
             .clickable {
-                navController.navigate("detail/${place.place_id}") // Navigasi dinamis
+                navController.navigate(Route.SouvenirDetail.createRoute(place.place_id))
             },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(

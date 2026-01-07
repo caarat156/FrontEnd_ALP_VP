@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.frontend_alp_vp.ui.navigation.Route
 import com.example.frontend_alp_vp.ui.viewmodel.PlaceViewModel
 
 @Composable
@@ -79,14 +80,24 @@ fun HomeView(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    CategoryItem("🎵", "Pentas Seni", Modifier.weight(1f)) { /* Rute Pensi */ }
-                    CategoryItem("🏖️", "Wisata", Modifier.weight(1f)) { navController.navigate("wisata") }
+                    // Gunakan Route object!
+                    CategoryItem("🎵", "Pentas Seni", Modifier.weight(1f)) {
+                        navController.navigate(Route.PensiList.route)
+                    }
+                    CategoryItem("🏖️", "Wisata", Modifier.weight(1f)) {
+                        navController.navigate(Route.Wisata.route)
+                    }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    CategoryItem("🍴", "Kuliner", Modifier.weight(1f)) { navController.navigate("kuliner") }
-                    CategoryItem("🛍️", "Souvenir", Modifier.weight(1f)) { navController.navigate("souvenir") }
+                    CategoryItem("🍴", "Kuliner", Modifier.weight(1f)) {
+                        navController.navigate(Route.Kuliner.route)
+                    }
+                    CategoryItem("🛍️", "Souvenir", Modifier.weight(1f)) {
+                        navController.navigate(Route.Souvenir.route)
+                    }
                 }
             }
+
         }
 
         Text(
