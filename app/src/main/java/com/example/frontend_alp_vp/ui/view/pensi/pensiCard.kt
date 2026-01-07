@@ -30,10 +30,13 @@ import androidx.compose.ui.unit.sp
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import coil.compose.rememberAsyncImagePainter
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun pensiCard(
     title: String,
+    imageUrl: String?,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
@@ -55,19 +58,18 @@ fun pensiCard(
         ) {
 
             // Image
-            Box(
+            val fixedUrl = imageUrl?.replace("localhost", "10.0.2.2")
+                ?: "https://placehold.co/600x400"
+
+            Image(
+                painter = rememberAsyncImagePainter(model = fixedUrl),
+                contentDescription = "Event Image",
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
                     .background(Color(0xFFD4C4B4)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "📷",
-                    fontSize = 40.sp,
-                    color = Color.Gray.copy(alpha = 0.5f)
-                )
-            }
+                contentScale = ContentScale.Crop
+            )
 
             // Title
             Box(
@@ -91,26 +93,18 @@ fun pensiCard(
 
 fun formatTimeFromIso(isoString: String): String {
     return try {
-        // 1. Parse string ISO dari Backend
+        // Coba parsing format ISO standar (1970-01-01T10:00:00.000Z)
         val parsedTime = ZonedDateTime.parse(isoString)
-
-        // 2. Tentukan format output yang diinginkan (HH:mm = 24 jam, hh:mm a = 12 jam AM/PM)
         val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
-
-        // 3. Kembalikan hasil format
         parsedTime.format(formatter)
     } catch (e: Exception) {
-        // Jika error (misal data kosong), kembalikan string aslinya atau "-"
-        isoString
+        // Jika gagal (mungkin formatnya cuma "10:00:00"), coba ambil 5 karakter pertama
+        if (isoString.length >= 5) {
+            isoString.take(5)
+        } else {
+            isoString // Menyerah, tampilkan apa adanya
+        }
     }
 }
 
 
-@Preview
-@Composable
-fun PensiCardPreview() {
-    pensiCard(
-        title = "Judul Acara Pensi yang Sangat Seru dan Menarik",
-        modifier = Modifier.padding(16.dp)
-    )
-}

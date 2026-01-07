@@ -54,7 +54,7 @@ fun AppNavigation() {
     // 4. Logika Token (Fallback untuk Testing)
     // Jika token di DataStore masih kosong (belum login), pakai token hardcode dari Postman.
     // NANTI SAAT FITUR LOGIN JADI: Hapus bagian `?: "TOKEN_..."`
-    val userToken = userTokenState ?: "MASUKKAN_TOKEN_DARI_POSTMAN_DISINI"
+    val userToken = userTokenState ?: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpYXQiOjE3Njc3MDc1ODgsImV4cCI6MTc2ODMxMjM4OH0.46fGfeowmQFKcKBX1RPvoKdo-ySYH5IgqsnGB2Fz4cc"
 
     val userId = 1 // Ganti sesuai ID user di database
 

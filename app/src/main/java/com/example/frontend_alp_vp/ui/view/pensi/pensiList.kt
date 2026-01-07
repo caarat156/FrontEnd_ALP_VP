@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/frontend_alp_vp/ui/view/pensi/pensiList.kt
 package com.example.frontend_alp_vp.ui.view.pensi
 
 import androidx.compose.foundation.layout.*
@@ -38,9 +37,10 @@ fun PensiListPage(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(pensiList) { pensi ->
-                    // Menggunakan komponen PensiCard yang sudah ada
+                    // PERBAIKAN DI SINI: Kirim data imageUrl ke Card
                     pensiCard(
                         title = pensi.title,
+                        imageUrl = pensi.imageUrl, // <--- JANGAN LUPA BARIS INI
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
                             // Kirim ID ke halaman detail
@@ -52,6 +52,7 @@ fun PensiListPage(
         }
     }
 }
+
 @Composable
 @Preview
 fun PensiListPagePreview() {

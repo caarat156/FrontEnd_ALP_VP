@@ -71,7 +71,12 @@ class PensiViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
-                val request = BookingRequest(userId, eventId, scheduleId, quantity)
+                val request = BookingRequest(
+                    performanceEventId = eventId,
+                    eventScheduleId = scheduleId,
+                    quantity = quantity,
+                    userId = userId
+                )
                 val response = repository.checkout(token, request)
                 if (response.success) _uiState.value = UiState.Success("Pembayaran Berhasil!")
                 else _uiState.value = UiState.Error(response.message ?: "Gagal")
