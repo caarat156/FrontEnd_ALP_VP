@@ -26,7 +26,6 @@ import com.example.frontend_alp_vp.ui.view.kuliner.KulinerList
 import com.example.frontend_alp_vp.ui.view.souvenir.SouvenirDetail
 import com.example.frontend_alp_vp.ui.view.wisata.WisataDetail
 import com.example.frontend_alp_vp.ui.view.wisata.WisataList
-import com.example.frontend_alp_vp.ui.viewmodel.PlaceDetailViewModel
 import com.example.frontend_alp_vp.ui.viewmodel.PlaceViewModel
 import coil.ImageLoader
 import coil.decode.SvgDecoder
@@ -36,7 +35,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Inisialisasi ImageLoader untuk pendukung SVG
+        // Inisialisasi ImageLoader untuk mendukung format SVG (penting untuk ikon)
         val imageLoader = ImageLoader.Builder(this)
             .components { add(SvgDecoder.Factory()) }
             .build()
@@ -58,12 +57,12 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    // Inisialisasi UserPreferences untuk mengambil token
+    // Inisialisasi UserPreferences untuk mengelola sesi/token
     val userPreferences = remember { UserPreferences(context) }
-    val userTokenState by userPreferences.getToken().collectAsState(initial = null)
+    val userTokenState by userPreferences.authToken.collectAsState(initial = null)
 
-    // Logika Token Fallback
-    val userToken = userTokenState ?: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJpYXQiOjE3Njc3MDc1ODgsImV4cCI6MTc2ODMxMjM4OH0.46fGfeowmQFKcKBX1RPvoKdo-ySYH5IgqsnGB2Fz4cc"
+    // Token fallback untuk keperluan development/testing
+    val userToken = userTokenState ?: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
     NavHost(navController = navController, startDestination = "home") {
 
@@ -72,19 +71,18 @@ fun AppNavigation() {
             HomeView(navController)
         }
 
-        // 2. LIST WISATA
+        // 2. HALAMAN LIST (Berdasarkan Kategori)
         composable("wisata") {
             val viewModel: PlaceViewModel = viewModel()
             WisataList(navController, viewModel)
         }
 
-        // 3. LIST KULINER (Opsional, jika kamu punya View-nya)
         composable("kuliner") {
             val viewModel: PlaceViewModel = viewModel()
             KulinerList(navController, viewModel)
         }
 
-        // 4. DETAIL PLACE (Wisata, Kuliner, Souvenir)
+        // 3. HALAMAN DETAIL (Dinamis berdasarkan categoryId)
         composable(
             route = "detail/{placeId}/{categoryId}",
             arguments = listOf(
@@ -95,13 +93,12 @@ fun AppNavigation() {
             val placeId = backStackEntry.arguments?.getInt("placeId") ?: 0
             val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
 
-            // Memilih View detail berdasarkan categoryId dari Backend
-            // 1 = Kuliner, 3 = Wisata, 4 = Souvenir (sesuai kode yang kamu berikan)
+            // Logika pemilihan View Detail sesuai ID Kategori dari database
             when (categoryId) {
-                1 -> KulinerDetail(placeId = placeId)
-                3 -> WisataDetail(placeId = placeId)
-                4 -> SouvenirDetail(placeId = placeId)
-                else -> KulinerDetail(placeId = placeId) // Default fallback
+                1 -> KulinerDetail(placeId = placeId) // Category 1: Kuliner
+                3 -> WisataDetail(placeId = placeId)  // Category 3: Wisata
+                4 -> SouvenirDetail(placeId = placeId) // Category 4: Souvenir
+                else -> WisataDetail(placeId = placeId) // Default fallback
             }
         }
     }
