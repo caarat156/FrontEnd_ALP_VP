@@ -16,15 +16,18 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WisataList(navController: NavController, viewModel: PlaceViewModel = viewModel()) {
-    val places by viewModel.places.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-
-    // Ambil data saat layar dibuka (Misal: ID Kategori Wisata = 1)
+@Composable
+fun WisataList(
+    modifier: Modifier = Modifier,
+    viewModel: PlaceViewModel = viewModel(),
+    navController: NavController
+) {
+    // Panggil data saat pertama kali dibuka (Category ID 1 untuk Wisata)
     LaunchedEffect(Unit) {
-        viewModel.fetchPlaces(categoryId = 3)
+        viewModel.loadPlaces(categoryId = 1)
     }
 
+    val places = viewModel.places // Ambil state langsung
 
     Scaffold(
         topBar = {
@@ -51,18 +54,19 @@ fun WisataList(navController: NavController, viewModel: PlaceViewModel = viewMod
                 )
             )
         }
-    ) { padding ->
-        if (isLoading) {
-            CircularProgressIndicator()
-        } else {
-            LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-                items(places) { place ->
-                    // Kirim object place ke card
-                    WisataListCard(place = place, onClick = {
-                        navController.navigate("detail/${place.id}")
-                    }
-                }
-            }
+    ) { LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        contentPadding = PaddingValues(16.dp),
+        modifier = modifier.fillMaxSize()
+    ) {
+        items(places) { place ->
+            // Kirim data 'place' ke Card
+            WisataListCard(
+                place = place,
+                navController = navController
+            )
+        }
+    }
         }
     }
 }

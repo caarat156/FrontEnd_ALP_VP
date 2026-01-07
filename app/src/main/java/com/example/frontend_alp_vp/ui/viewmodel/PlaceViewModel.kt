@@ -5,27 +5,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend_alp_vp.data.service.RetrofitClient
-import com.example.frontend_alp_vp.model.PlaceData
+import com.example.frontend_alp_vp.service.RetrofitClient
+import com.example.frontend_alp_vp.ui.model.PlaceData
 import kotlinx.coroutines.launch
 
 class PlaceViewModel : ViewModel() {
-    var places: List<PlaceData> by mutableStateOf(listOf())
+    // State yang akan dibaca oleh UI
+    var places by mutableStateOf<List<PlaceData>>(listOf())
         private set
 
-    var isLoading: Boolean by mutableStateOf(false)
+    var isLoading by mutableStateOf(false)
         private set
 
-    fun loadPlaces(categoryId: Int? = null, locationId: Int? = null) {
+    fun loadPlaces(categoryId: Int? = null) {
         viewModelScope.launch {
             isLoading = true
             try {
-                val response = RetrofitClient.apiService.getAllPlaces(categoryId, locationId)
+                val response = RetrofitClient.apiService.getAllPlaces(categoryId, null)
                 if (response.isSuccessful) {
                     places = response.body()?.data ?: listOf()
                 }
             } catch (e: Exception) {
-                // Log error
+                e.printStackTrace()
             } finally {
                 isLoading = false
             }

@@ -1,7 +1,7 @@
 package com.example.frontend_alp_vp.data.repository
 
+import com.example.frontend_alp_vp.api.ApiService
 import com.example.frontend_alp_vp.ui.model.PlaceCategoryModel
-import com.example.frontend_alp_vp.data.service.ApiService
 
 class PlaceCategoryRepository(private val apiService: ApiService) {
 

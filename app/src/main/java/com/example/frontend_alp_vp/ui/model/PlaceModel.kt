@@ -1,19 +1,19 @@
-package com.example.frontend_alp_vp.model
+package com.example.frontend_alp_vp.ui.model
 
 import com.google.gson.annotations.SerializedName
 
-// Wrapper respon dari API (Temanmu menggunakan pola status/success + data)
-data class PlaceResponse<T>(
-    val success: Boolean,
-    val message: String?,
-    val data: T
+data class PlaceResponse(
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("data") val data: List<PlaceData>
 )
 
-data class Place(
-    @SerializedName("place_id") val id: Int,
-    @SerializedName("place_name") val name: String,
-    @SerializedName("place_description") val description: String,
+data class PlaceData(
+    @SerializedName("place_id") val place_id: Int,
+    @SerializedName("place_name") val place_name: String,
+    @SerializedName("place_description") val place_description: String,
     @SerializedName("address") val address: String,
-    @SerializedName("image_url") val imageUrl: String?,
-    @SerializedName("rating_avg") val ratingAvg: Double?
+    @SerializedName("image_url") val image_url: String?,
+    @SerializedName("rating_avg") val rating_avg: Double,
+    @SerializedName("review_count") val review_count: Int,
+    @SerializedName("category_name") val category_name: String
 )

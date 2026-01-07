@@ -13,10 +13,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.frontend_alp_vp.ui.model.PlaceData
 
 @Composable
-fun WisataListCard() {
+fun WisataListCard(
+    place: PlaceData, // Tambahkan parameter ini
+    navController: NavController
+) {
     Card(
         modifier = Modifier
             .width(160.dp)

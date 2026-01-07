@@ -1,5 +1,6 @@
 package com.example.frontend_alp_vp.data.repository
 
+import com.example.frontend_alp_vp.api.ApiService
 import com.example.frontend_alp_vp.ui.model.PlaceReviewModel
 import com.example.frontend_alp_vp.data.service.ApiService
 
