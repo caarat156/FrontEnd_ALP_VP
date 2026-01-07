@@ -31,6 +31,7 @@ import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.Coil
 import com.example.frontend_alp_vp.ui.view.review.AddReview
+import com.example.frontend_alp_vp.ui.view.souvenir.SouvenirList
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,65 +66,34 @@ fun AppNavigation() {
     // Token fallback untuk keperluan development/testing
     val userToken = userTokenState ?: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
+    // Di dalam NavHost pada MainActivity.kt
     NavHost(navController = navController, startDestination = "home") {
 
-        // 1. HALAMAN HOME
         composable("home") {
-            HomeView(navController)
+            HomeView(navController) // Tambahkan navController agar Home bisa pindah halaman
         }
 
-        // 2. HALAMAN LIST (Berdasarkan Kategori)
         composable("wisata") {
-            val viewModel: PlaceViewModel = viewModel()
-            WisataList(navController, viewModel)
+            WisataList(navController, viewModel())
         }
 
         composable("kuliner") {
-            val viewModel: PlaceViewModel = viewModel()
-            KulinerList(navController, viewModel)
+            KulinerList(navController, viewModel())
+        }
+        composable("souvenir") {
+            SouvenirList(navController, viewModel())
         }
 
-        // 3. HALAMAN DETAIL (Dinamis berdasarkan categoryId)
+        // Gunakan rute tunggal yang cerdas untuk semua detail
         composable(
-            route = "detail/{placeId}/{categoryId}",
-            arguments = listOf(
-                navArgument("placeId") { type = NavType.IntType },
-                navArgument("categoryId") { type = NavType.IntType }
-            )
-        ) { backStackEntry ->
-            val placeId = backStackEntry.arguments?.getInt("placeId") ?: 0
-            val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
-
-            // Logika pemilihan View Detail sesuai ID Kategori dari database
-            when (categoryId) {
-                1 -> KulinerDetail(placeId = placeId) // Category 1: Kuliner
-                3 -> WisataDetail(placeId = placeId)  // Category 3: Wisata
-                4 -> SouvenirDetail(placeId = placeId) // Category 4: Souvenir
-                else -> WisataDetail(placeId = placeId) // Default fallback
-            }
-        }
-        // Di dalam NavHost { ... }
-        composable("kuliner_detail/{placeId}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("placeId")?.toInt() ?: 0
-            KulinerDetail(placeId = id, navController = navController)
-        }
-
-        composable("souvenir_detail/{placeId}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("placeId")?.toInt() ?: 0
-            SouvenirDetail(placeId = id, navController = navController)
-        }
-
-        composable("wisata_detail/{placeId}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("placeId")?.toInt() ?: 0
-            WisataDetail(placeId = id, navController = navController)
-        }
-
-        composable(
-            route = "add_review/{placeId}",
+            route = "detail/{placeId}",
             arguments = listOf(navArgument("placeId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getInt("placeId") ?: 0
-            AddReview(placeId = id, navController = navController)
+            val placeId = backStackEntry.arguments?.getInt("placeId") ?: 0
+            // Karena kita tidak tahu kategorinya dari URL ini,
+            // Anda bisa mengarahkan ke satu view detail umum atau
+            // sesuaikan dengan logika di tiap ListCard (lihat poin 2)
+            WisataDetail(placeId = placeId, navController = navController)
         }
     }
 }
