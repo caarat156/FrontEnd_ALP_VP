@@ -15,31 +15,60 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend_alp_vp.viewModel.PensiViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun CalendarPage(viewModel: PensiViewModel = viewModel()) {
     val pensiList by viewModel.pensiList.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.loadPensiList() // Load semua event untuk ditampilkan di list
+        viewModel.loadPensiList()
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("Kalender Acara", fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Text("Event Mendatang", fontSize = 14.sp, color = Color.Gray, modifier = Modifier.padding(bottom = 16.dp))
 
-        // List Event (Timeline Style)
         LazyColumn {
             items(pensiList) { pensi ->
                 pensi.schedules.forEach { schedule ->
+
+                    // --- LOGIKA PARSING TANGGAL DIMULAI ---
+                    val parsedDate = remember(schedule.date) {
+                        try {
+                            // Ambil 10 karakter pertama (yyyy-MM-dd) untuk diparse
+                            LocalDate.parse(schedule.date.take(10))
+                        } catch (e: Exception) {
+                            null
+                        }
+                    }
+
+                    // Formatter untuk Bulan dan Tahun (Contoh: "Sep 2025")
+                    // Menggunakan Locale Indonesia agar nama bulan sesuai (Agustus, September, dll)
+                    val monthYearFormatter = DateTimeFormatter.ofPattern("MMM yyyy", Locale("id", "ID"))
+                    // --- LOGIKA PARSING TANGGAL SELESAI ---
+
                     Row(modifier = Modifier.padding(bottom = 24.dp)) {
-                        // Tanggal di kiri
+                        // Kolom Tanggal (Kiri)
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier.width(60.dp)
                         ) {
-                            Text(schedule.date.takeLast(2), fontSize = 20.sp, fontWeight = FontWeight.Bold) // Ambil tanggalnya aja (misal "20")
-                            Text(schedule.date.take(7), fontSize = 12.sp, color = Color.Gray) // Bulan/Tahun
+                            // Tampilkan TANGGAL (Angka hari)
+                            Text(
+                                text = parsedDate?.dayOfMonth?.toString() ?: "--",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            // Tampilkan BULAN & TAHUN
+                            Text(
+                                text = parsedDate?.format(monthYearFormatter) ?: schedule.date,
+                                fontSize = 12.sp,
+                                color = Color.Gray
+                            )
                         }
 
                         Spacer(modifier = Modifier.width(12.dp))
@@ -48,7 +77,7 @@ fun CalendarPage(viewModel: PensiViewModel = viewModel()) {
                         Box(
                             modifier = Modifier
                                 .width(2.dp)
-                                .height(80.dp)
+                                .height(80.dp) // Anda bisa ganti ke .fillMaxHeight() di dalam IntrinsicSize jika ingin dinamis
                                 .background(Color.LightGray)
                         )
 
@@ -61,6 +90,7 @@ fun CalendarPage(viewModel: PensiViewModel = viewModel()) {
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Text(pensi.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                                // Pastikan fungsi formatTimeFromIso() Anda juga sudah benar menangani ISO String
                                 Text("${formatTimeFromIso(schedule.startTime)} - ${formatTimeFromIso(schedule.endTime)}", fontSize = 12.sp, color = Color(0xFFC49A7A))
                                 Text(pensi.venueAddress ?: "", fontSize = 12.sp, color = Color.Gray)
                             }
@@ -71,7 +101,6 @@ fun CalendarPage(viewModel: PensiViewModel = viewModel()) {
         }
     }
 }
-
 @Composable
 @Preview
 fun CalendarPagePreview() {

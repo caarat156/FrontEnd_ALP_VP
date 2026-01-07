@@ -1,7 +1,14 @@
 package com.example.frontend_alp_vp.network
 
+import com.example.frontend_alp_vp.model.BookingHistory
+import com.example.frontend_alp_vp.model.BookingRequest
+import com.example.frontend_alp_vp.model.BookingResult
+import com.example.frontend_alp_vp.model.CalendarDate
 import com.example.frontend_alp_vp.model.LoginRequest
 import com.example.frontend_alp_vp.model.LoginResponse
+import com.example.frontend_alp_vp.model.PaymentResponseWrapper
+import com.example.frontend_alp_vp.model.Pensi
+import com.example.frontend_alp_vp.model.PensiResponse
 import com.example.frontend_alp_vp.model.RegisterRequest
 import com.example.frontend_alp_vp.model.RegisterResponse
 import com.example.frontend_alp_vp.model.UserResponse
@@ -58,4 +65,45 @@ interface ApiService {
         @Path("id") contentId: Int
     ): Response<Any>
 
+    @GET("api/pensi")
+    suspend fun getAllPensi(
+        @Query("locationId") locationId: Int? = null
+    ): PensiResponse<List<Pensi>>
+
+    @GET("api/pensi/{id}")
+    suspend fun getPensiDetail(
+        @Path("id") id: Int
+    ): PensiResponse<Pensi>
+
+    // Endpoint Payment (Butuh Token)
+    @POST("api/payment/checkout")
+    suspend fun checkout(
+        @Header("Authorization") token: String,
+        @Body request: BookingRequest
+    ): PaymentResponseWrapper<BookingResult>
+
+    @GET("api/history")
+    suspend fun getHistory(
+        @Header("Authorization") token: String
+    ): PensiResponse<List<BookingHistory>>
+
+    @GET("api/calendar")
+    suspend fun getCalendar(
+        @Query("year") year: Int,
+        @Query("month") month: Int
+    ): PensiResponse<List<CalendarDate>>
+
+
+    // HISTORY: Get All User History
+    @GET("api/payment/history")
+    suspend fun getUserHistory(
+        @Header("Authorization") token: String
+    ): PaymentResponseWrapper<List<BookingHistory>>
+
+    // HISTORY DETAIL: Get One Booking
+    @GET("api/payment/booking/{id}")
+    suspend fun getBookingDetail(
+        @Header("Authorization") token: String,
+        @Path("id") bookingId: Int
+    ): PaymentResponseWrapper<BookingHistory>
 }

@@ -1,23 +1,22 @@
-// app/src/main/java/com/example/frontend_alp_vp/repository/PensiRepository.kt
 package com.example.frontend_alp_vp.repository
 
 import com.example.frontend_alp_vp.model.BookingRequest
+import com.example.frontend_alp_vp.network.RetrofitClient // Pastikan import ini dari network, bukan repository
 
 class PensiRepository {
-    private val api = RetrofitClient.api
+    // Menggunakan instance dari RetrofitClient di folder network
+    private val apiService = RetrofitClient.instance
 
-    suspend fun getAllPensi() = api.getAllPensi()
+    suspend fun getAllPensi() = apiService.getAllPensi()
 
-    suspend fun getPensiDetail(id: Int) = api.getPensiDetail(id)
+    suspend fun getPensiDetail(id: Int) = apiService.getPensiDetail(id)
 
     suspend fun checkout(token: String, request: BookingRequest) =
-        api.checkout("Bearer $token", request)
+        apiService.checkout("Bearer $token", request)
 
-    suspend fun getHistory(token: String) = api.getHistory("Bearer $token")
+    suspend fun getHistory(token: String) = apiService.getUserHistory("Bearer $token")
 
-    suspend fun getCalendar(year: Int, month: Int) = api.getCalendar(year, month)
 
     suspend fun getBookingDetail(token: String, bookingId: Int) =
-        api.getBookingDetail("Bearer $token", bookingId)
-
+        apiService.getBookingDetail("Bearer $token", bookingId)
 }
