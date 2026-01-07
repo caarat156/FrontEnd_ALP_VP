@@ -52,4 +52,10 @@ interface ApiService {
         @Part("caption") caption: RequestBody
     ): Response<Any>
 
+    @DELETE("api/reels/{id}")
+    suspend fun deleteReel(
+        @Header("Authorization") token: String,
+        @Path("id") contentId: Int
+    ): Response<Any>
+
 }

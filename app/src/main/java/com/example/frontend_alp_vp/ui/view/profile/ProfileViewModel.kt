@@ -121,4 +121,24 @@ class ProfileViewModel(private val authManager: AuthenticationManager) : ViewMod
 
         return tempFile
     }
+
+    fun deleteReel(contentId: Int) {
+        viewModelScope.launch {
+            try {
+                val token = authManager.authToken.first() ?: ""
+                if (token.isNotEmpty()) {
+                    val response = RetrofitClient.instance.deleteReel("Bearer $token", contentId)
+
+                    if (response.isSuccessful) {
+                        // Reload data to remove the deleted item from the screen
+                        loadProfileData()
+                    } else {
+                        Log.e("DELETE_REEL", "Failed: ${response.code()}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("DELETE_REEL", "Error", e)
+            }
+        }
+    }
 }

@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -42,6 +43,9 @@ fun ProfileScreen(
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
     var captionText by remember { mutableStateOf("") }
 
+    // --- DELETE STATE ---
+    var reelToDelete by remember { mutableStateOf<Reel?>(null) }
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
             selectedUri = uri
@@ -53,10 +57,9 @@ fun ProfileScreen(
         viewModel.loadProfileData()
     }
 
-    // CHANGED ROOT TO BOX TO SUPPORT OVERLAY (BUTTON)
     Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        // --- YOUR ORIGINAL UI ---
+        // --- MAIN UI ---
         Column(modifier = Modifier.fillMaxSize()) {
             ProfileHeader(
                 user = user,
@@ -72,12 +75,15 @@ fun ProfileScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(reels) { reel ->
-                    ReelGridItem(reel)
+                    // PASS THE CLICK EVENT TO TRIGGER DELETE
+                    ReelGridItem(reel = reel, onClick = {
+                        reelToDelete = reel
+                    })
                 }
             }
         }
 
-        // --- NEW: UPLOAD BUTTON (+) ---
+        // --- UPLOAD BUTTON (+) ---
         FloatingActionButton(
             onClick = { launcher.launch("*/*") },
             containerColor = Color(0xFFA56953), // Brown
@@ -91,7 +97,7 @@ fun ProfileScreen(
             Icon(Icons.Default.Add, contentDescription = "Upload")
         }
 
-        // --- NEW: UPLOAD DIALOG ---
+        // --- UPLOAD DIALOG ---
         if (showUploadDialog && selectedUri != null) {
             AlertDialog(
                 onDismissRequest = { showUploadDialog = false },
@@ -129,10 +135,39 @@ fun ProfileScreen(
                 }
             )
         }
+
+        // --- DELETE CONFIRMATION DIALOG ---
+        if (reelToDelete != null) {
+            AlertDialog(
+                onDismissRequest = { reelToDelete = null },
+                title = { Text("Delete Reel") },
+                text = { Text("Are you sure you want to delete this reel? This action cannot be undone.") },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            // !!! ENSURE YOUR MODEL HAS content_id !!!
+                            // If your model uses 'id', change content_id to id below
+                            reelToDelete?.id?.let { id ->
+                                viewModel.deleteReel(id)
+                            }
+                            reelToDelete = null
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    ) {
+                        Text("Delete", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { reelToDelete = null }) {
+                        Text("Cancel", color = Color.Black)
+                    }
+                }
+            )
+        }
     }
 }
 
-// --- YOUR ORIGINAL HELPERS (UNTOUCHED) ---
+// --- HELPERS ---
 
 @Composable
 fun ProfileHeader(user: UserData?, onEditProfileClick: () -> Unit) {
@@ -205,14 +240,17 @@ fun ProfileHeader(user: UserData?, onEditProfileClick: () -> Unit) {
     }
 }
 
+// --- SINGLE CORRECTED GRID ITEM ---
 @Composable
-fun ReelGridItem(reel: Reel) {
+fun ReelGridItem(reel: Reel, onClick: () -> Unit) {
     val baseUrl = "http://10.0.2.2:3000/"
+
     Box(
         modifier = Modifier
             .aspectRatio(1f)
             .padding(1.dp)
             .background(Color.LightGray)
+            .clickable { onClick() } // Handles the tap
     ) {
         AsyncImage(
             model = baseUrl + reel.content_url,

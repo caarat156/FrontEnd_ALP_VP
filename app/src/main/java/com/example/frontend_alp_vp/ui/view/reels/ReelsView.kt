@@ -27,6 +27,10 @@ fun ReelsScreen(viewModel: ReelsViewModel = viewModel()) {
     val reels by viewModel.reels.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchReelsFeed()
+    }
+
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         if (isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -38,6 +42,8 @@ fun ReelsScreen(viewModel: ReelsViewModel = viewModel()) {
             }
         }
     }
+
+
 }
 
 @Composable
@@ -103,4 +109,6 @@ fun ReelItem(reel: Reel) {
             }
         }
     }
+
+
 }

@@ -15,9 +15,7 @@ class ReelsViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    init {
-        fetchReelsFeed()
-    }
+
 
     fun fetchReelsFeed() {
         viewModelScope.launch {
@@ -34,4 +32,6 @@ class ReelsViewModel : ViewModel() {
             }
         }
     }
+
+
 }
