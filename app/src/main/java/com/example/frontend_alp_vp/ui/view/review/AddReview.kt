@@ -19,9 +19,16 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddReview() {
-    var rating by remember { mutableStateOf(0) }
-    var reviewText by remember { mutableStateOf("") }
+@Composable
+fun AddReview(
+    placeId: Int,
+    navController: NavController,
+    reviewViewModel: ReviewViewModel = viewModel()
+) {
+    val context = LocalContext.current
+    val userPreferences = UserPreferences(context)
+    var rating by remember { mutableStateOf(5) }
+    var comment by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
@@ -151,17 +158,26 @@ fun AddReview() {
             // Submit Button
             Button(
                 onClick = {
-                    viewModel.submitReview(
-                        placeId = placeId,
-                        userId = userId, // Ambil dari AuthenticationManager teman Anda
-                        rating = rating,
-                        comment = reviewText,
-                        onSuccess = { onBack() } // Kembali ke halaman sebelumnya jika sukses
-                    )
+                    val token = userPreferences.getToken()
+                    if (!token.isNullOrEmpty()) {
+                        reviewViewModel.submitReview(
+                            token = token,
+                            placeId = placeId,
+                            rating = rating,
+                            comment = comment,
+                            onSuccess = {
+                                // Kembali ke halaman detail dan list review akan terupdate
+                                navController.popBackStack()
+                            }
+                        )
+                    } else {
+                        Toast.makeText(context, "Please login first", Toast.LENGTH_SHORT).show()
+                    }
                 },
-                enabled = rating > 0 && reviewText.isNotBlank()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8B5A3C))
             ) {
-                Text("Kirim Review")
+                Text("Submit Review", color = Color.White)
             }
         }
     }

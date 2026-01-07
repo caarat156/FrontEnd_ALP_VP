@@ -30,6 +30,7 @@ import com.example.frontend_alp_vp.ui.viewmodel.PlaceViewModel
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.Coil
+import com.example.frontend_alp_vp.ui.view.review.AddReview
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,6 +101,29 @@ fun AppNavigation() {
                 4 -> SouvenirDetail(placeId = placeId) // Category 4: Souvenir
                 else -> WisataDetail(placeId = placeId) // Default fallback
             }
+        }
+        // Di dalam NavHost { ... }
+        composable("kuliner_detail/{placeId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("placeId")?.toInt() ?: 0
+            KulinerDetail(placeId = id, navController = navController)
+        }
+
+        composable("souvenir_detail/{placeId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("placeId")?.toInt() ?: 0
+            SouvenirDetail(placeId = id, navController = navController)
+        }
+
+        composable("wisata_detail/{placeId}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("placeId")?.toInt() ?: 0
+            WisataDetail(placeId = id, navController = navController)
+        }
+
+        composable(
+            route = "add_review/{placeId}",
+            arguments = listOf(navArgument("placeId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getInt("placeId") ?: 0
+            AddReview(placeId = id, navController = navController)
         }
     }
 }
