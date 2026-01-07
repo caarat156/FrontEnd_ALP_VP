@@ -13,15 +13,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.frontend_alp_vp.ui.view.wisata.WisataListCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SouvenirList(navController: NavController, viewModel: PlaceViewModel = viewModel()) {
-    val places by viewModel.places.collectAsState()
-
+fun SouvenirList(
+    modifier: Modifier = Modifier,
+    viewModel: PlaceViewModel = viewModel(),
+    navController: NavController
+) {
     LaunchedEffect(Unit) {
-        viewModel.fetchPlaces(categoryId = 4) // ID Kategori Kuliner
+        viewModel.loadPlaces(categoryId = 4)
     }
+
+    val places = viewModel.places // Ambil state langsung
 
     Scaffold(
         topBar = {
@@ -49,11 +54,17 @@ fun SouvenirList(navController: NavController, viewModel: PlaceViewModel = viewM
             )
         }
     ) { paddingValues ->
-        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-            items(places) { item ->
-                SouvenirListCard(place = item, onClick = {
-                    navController.navigate("detail/${item.id}")
-                })
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(16.dp),
+            modifier = modifier.fillMaxSize()
+        ) {
+            items(places) { place ->
+                // Kirim data 'place' ke Card
+                WisataListCard(
+                    place = place,
+                    navController = navController
+                )
             }
         }
     }

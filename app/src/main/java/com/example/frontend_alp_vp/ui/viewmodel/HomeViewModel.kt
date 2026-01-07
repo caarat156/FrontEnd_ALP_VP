@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend_alp_vp.ui.model.PlaceModel
 import com.example.frontend_alp_vp.ui.model.PlaceCategoryModel
-import com.example.frontend_alp_vp.data.repository.PlaceRepository
+import com.example.frontend_alp_vp.repository.PlaceRepository
 import com.example.frontend_alp_vp.data.repository.PlaceCategoryRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

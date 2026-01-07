@@ -22,9 +22,8 @@ fun WisataList(
     viewModel: PlaceViewModel = viewModel(),
     navController: NavController
 ) {
-    // Panggil data saat pertama kali dibuka (Category ID 1 untuk Wisata)
     LaunchedEffect(Unit) {
-        viewModel.loadPlaces(categoryId = 1)
+        viewModel.loadPlaces(categoryId = 3)
     }
 
     val places = viewModel.places // Ambil state langsung
@@ -54,19 +53,19 @@ fun WisataList(
                 )
             )
         }
-    ) { LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(16.dp),
-        modifier = modifier.fillMaxSize()
-    ) {
-        items(places) { place ->
-            // Kirim data 'place' ke Card
-            WisataListCard(
-                place = place,
-                navController = navController
-            )
-        }
-    }
+    ) { paddingValues ->
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(16.dp),
+            modifier = modifier.fillMaxSize()
+        ) {
+            items(places) { place ->
+                // Kirim data 'place' ke Card
+                WisataListCard(
+                    place = place,
+                    navController = navController
+                )
+            }
         }
     }
 }
