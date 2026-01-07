@@ -64,6 +64,6 @@ fun MainApp() {
 @Composable
 fun GreetingPreview() {
     FrontEnd_ALP_VPTheme {
-        MainApp()
+        HomeView()
     }
 }

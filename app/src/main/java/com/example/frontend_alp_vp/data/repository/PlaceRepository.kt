@@ -1,6 +1,6 @@
 package com.example.frontend_alp_vp.repository
 
-import com.example.frontend_alp_vp.service.RetrofitClient
+import com.example.frontend_alp_vp.data.service.RetrofitClient
 
 class PlaceRepository {
     private val api = RetrofitClient.instance

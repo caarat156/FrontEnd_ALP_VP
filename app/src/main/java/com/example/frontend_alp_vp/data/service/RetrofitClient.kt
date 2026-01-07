@@ -1,5 +1,6 @@
-package com.example.frontend_alp_vp.service
+package com.example.frontend_alp_vp.data.service
 
+import com.example.frontend_alp_vp.api.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
