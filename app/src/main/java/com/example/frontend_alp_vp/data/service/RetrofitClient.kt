@@ -5,8 +5,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    // Gunakan 10.0.2.2 jika Anda memakai emulator Android
-    private const val BASE_URL = "http://10.0.2.2/"
+    // Gunakan 10.0.2.2 untuk emulator, pastikan pakai ':' sebelum 3000
+    private const val BASE_URL = "http://10.0.2.2:3000/api/"
 
     val instance: ApiService by lazy {
         val retrofit = Retrofit.Builder()
