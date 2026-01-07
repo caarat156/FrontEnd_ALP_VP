@@ -35,12 +35,21 @@ interface ApiService {
         @Part file: MultipartBody.Part?
     ): UserResponse
 
-    @GET("api/reels/me")
-    suspend fun getMyReels(): Response<ReelResponse>
+    @GET("api/reels/me") // Make sure your backend route matches this URL!
+    suspend fun getMyReels(
+        @Header("Authorization") token: String
+    ): Response<ReelResponse>
 
     // Add this inside your interface
     @GET("api/reels") // Ensure this matches your backend route for "Get All Reels"
     suspend fun getAllReels(): Response<ReelResponse>
 
+    @Multipart
+    @POST("api/reels")
+    suspend fun uploadReel(
+        @Header("Authorization") token: String,
+        @Part file: MultipartBody.Part,
+        @Part("caption") caption: RequestBody
+    ): Response<Any>
 
 }
