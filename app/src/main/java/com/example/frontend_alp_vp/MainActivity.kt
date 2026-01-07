@@ -20,11 +20,18 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.frontend_alp_vp.ui.theme.FrontEnd_ALP_VPTheme
 import com.example.frontend_alp_vp.ui.view.pensi.*
+import coil.ImageLoader
+import coil.decode.SvgDecoder
+import coil.Coil
 // import com.example.frontend_alp_vp.UserPreferences // Pastikan file UserPreferences.kt sudah dibuat
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val imageLoader = ImageLoader.Builder(this)
+            .components { add(SvgDecoder.Factory()) }
+            .build()
+        Coil.setImageLoader(imageLoader)
         enableEdgeToEdge()
         setContent {
             FrontEnd_ALP_VPTheme {

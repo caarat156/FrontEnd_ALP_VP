@@ -1,4 +1,3 @@
-// app/src/main/java/com/example/frontend_alp_vp/ui/view/pensi/pensiDetail.kt
 package com.example.frontend_alp_vp.ui.view.pensi
 
 import androidx.compose.foundation.Image
@@ -26,7 +25,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 @Composable
 fun PensiDetailPage(
     navController: NavController,
-    pensiId: Int, // Didapat dari navigasi
+    pensiId: Int,
     viewModel: PensiViewModel = viewModel()
 ) {
     val pensiDetail by viewModel.selectedPensi.collectAsState()
@@ -47,30 +46,40 @@ fun PensiDetailPage(
             )
         }
     ) { paddingValues ->
-        // Konten halaman dimuat di dalam paddingValues
         pensiDetail?.let { pensi ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues) // PENTING: Pakai padding dari Scaffold agar tidak tertutup TopBar
+                    .padding(paddingValues)
                     .verticalScroll(rememberScrollState())
                     .padding(16.dp)
             ) {
-                // LOGIKA GAMBAR (Backend -> Emulator)
-                val fixedUrl = pensi.imageUrl?.replace("localhost", "10.0.2.2")
+                // --- LOGIKA FIX GAMBAR ---
+                var finalUrl = pensi.imageUrl?.replace("localhost", "10.0.2.2")
+
+                // HACK: Paksa ubah format SVG (placehold.co) jadi PNG agar muncul di Android
+                if (finalUrl?.contains("placehold.co") == true && !finalUrl!!.contains(".png")) {
+                    finalUrl = finalUrl!!.replace("?", ".png?") // Sisipkan .png sebelum query
+                    if (!finalUrl!!.contains(".png")) { // Kalau ga ada query, tempel di belakang
+                        finalUrl = "$finalUrl.png"
+                    }
+                }
+
+                // Gunakan URL yang sudah difix
                 val painter = rememberAsyncImagePainter(
-                    model = fixedUrl ?: "https://placehold.co/600x400"
+                    model = finalUrl ?: "https://placehold.co/600x400.png"
                 )
 
                 Image(
-                    painter = painter, // PENTING: Gunakan variabel painter yang sudah dibuat di atas
+                    painter = painter, // <--- PENTING: Gunakan painter yang sudah dibuat
                     contentDescription = "Event Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp) // Berikan tinggi fix agar gambar muncul
+                        .height(200.dp)
                         .background(Color(0xFFD4C4B4)),
                     contentScale = ContentScale.Crop
                 )
+                // -------------------------
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -83,18 +92,14 @@ fun PensiDetailPage(
                 Spacer(modifier = Modifier.height(24.dp))
                 Text("Jadwal & Tiket", fontSize = 18.sp, style = MaterialTheme.typography.titleMedium)
 
-                // Menampilkan list jadwal dari backend
                 pensi.schedules.forEach { schedule ->
                     ScheduleItem(schedule) {
-                        // Navigasi ke Payment bawa ID jadwal
                         navController.navigate("payment/${pensi.id}/${schedule.scheduleId}")
                     }
                 }
             }
         } ?: Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
             contentAlignment = androidx.compose.ui.Alignment.Center
         ) {
             CircularProgressIndicator()
@@ -102,6 +107,7 @@ fun PensiDetailPage(
     }
 }
 
+// ... (Sisa kode ScheduleItem dan Preview biarkan sama) ...
 @Composable
 fun ScheduleItem(schedule: PensiSchedule, onBuy: () -> Unit) {
     Card(
@@ -111,15 +117,12 @@ fun ScheduleItem(schedule: PensiSchedule, onBuy: () -> Unit) {
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF4EDE6))
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
         ) {
             Column {
                 Text(schedule.date, style = MaterialTheme.typography.bodyMedium)
-                // Panggil fungsi formatTimeFromIso dari pensiCard.kt
                 Text(
                     "${formatTimeFromIso(schedule.startTime)} - ${formatTimeFromIso(schedule.endTime)} WIB",
                     style = MaterialTheme.typography.bodySmall
@@ -130,50 +133,5 @@ fun ScheduleItem(schedule: PensiSchedule, onBuy: () -> Unit) {
                 Text("Beli")
             }
         }
-    }
-}
-
-@Composable
-@Preview
-fun PensiDetailPagePreview() {
-    // Hanya preview layout tanpa data nyata
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
-    ) {
-        // Gambar Placeholder
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .background(Color.LightGray),
-            contentAlignment = androidx.compose.ui.Alignment.Center
-        ) {
-            Text("Gambar Acara", color = Color.White)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("Judul Acara Pensi", fontSize = 24.sp, style = MaterialTheme.typography.titleLarge)
-        Text("Alamat Lokasi Acara", color = Color.Gray)
-
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("Deskripsi singkat...", fontSize = 14.sp)
-
-        Spacer(modifier = Modifier.height(24.dp))
-        Text("Jadwal & Tiket", fontSize = 18.sp, style = MaterialTheme.typography.titleMedium)
-
-        // Contoh Jadwal
-        ScheduleItem(
-            schedule = PensiSchedule(
-                scheduleId = 1,
-                date = "2024-12-20",
-                startTime = "10:00",
-                endTime = "12:00",
-                price = 50000.0
-            )
-        ) {}
     }
 }
