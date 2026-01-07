@@ -16,7 +16,13 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SouvenirList() {
+fun SouvenirList(navController: NavController, viewModel: PlaceViewModel = viewModel()) {
+    val places by viewModel.places.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchPlaces(categoryId = 4) // ID Kategori Kuliner
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -43,17 +49,11 @@ fun SouvenirList() {
             )
         }
     ) { paddingValues ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            items(6) { index ->
-                SouvenirListCard()
+        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+            items(places) { item ->
+                SouvenirListCard(place = item, onClick = {
+                    navController.navigate("detail/${item.id}")
+                })
             }
         }
     }

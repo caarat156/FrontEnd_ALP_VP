@@ -150,23 +150,18 @@ fun AddReview() {
 
             // Submit Button
             Button(
-                onClick = { /* Handle submit */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF8B5A3C),
-                    disabledContainerColor = Color.Gray
-                ),
-                shape = RoundedCornerShape(12.dp),
+                onClick = {
+                    viewModel.submitReview(
+                        placeId = placeId,
+                        userId = userId, // Ambil dari AuthenticationManager teman Anda
+                        rating = rating,
+                        comment = reviewText,
+                        onSuccess = { onBack() } // Kembali ke halaman sebelumnya jika sukses
+                    )
+                },
                 enabled = rating > 0 && reviewText.isNotBlank()
             ) {
-                Text(
-                    text = "Kirim Review",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Text("Kirim Review")
             }
         }
     }

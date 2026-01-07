@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,11 +19,20 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend_alp_vp.ui.view.review.ReviewCard
+import com.example.frontend_alp_vp.ui.viewmodel.ReviewViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KulinerDetail() {
+fun KulinerDetail(
+placeId: Int,
+reviewViewModel: ReviewViewModel = viewModel()
+) {
+    // Ambil data review saat pertama kali layar dibuka
+    LaunchedEffect(placeId) {
+        reviewViewModel.fetchReviews(placeId)
+    }
     Scaffold(
         topBar = {
             TopAppBar(

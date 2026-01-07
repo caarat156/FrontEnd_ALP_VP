@@ -13,16 +13,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.frontend_alp_vp.ui.view.souvenir.SouvenirListCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KulinerList() {
+fun KulinerList(
+    navController: NavController, viewModel: PlaceViewModel = viewModel()) {
+    val places by viewModel.places.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchPlaces(categoryId = 1) // ID Kategori Kuliner
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "Kuliner",
+                        "Toko Souvenir",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                     )
@@ -43,17 +51,11 @@ fun KulinerList() {
             )
         }
     ) { paddingValues ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            items(6) { index ->
-                KulinerListCard()
+        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+            items(places) { item ->
+                KulinerListCard(place = item, onClick = {
+                    navController.navigate("detail/${item.id}")
+                })
             }
         }
     }
