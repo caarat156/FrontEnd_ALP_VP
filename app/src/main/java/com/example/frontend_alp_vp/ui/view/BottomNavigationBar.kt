@@ -9,7 +9,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.frontend_alp_vp.R
-import com.example.frontend_alp_vp.ui.navigation.Route
 
 sealed class BottomNavItem(
     val route: String,
@@ -17,12 +16,11 @@ sealed class BottomNavItem(
     val activeIcon: Int,
     val label: String
 ) {
-    // Gunakan Route.xxx.route agar konsisten
-    object Home : BottomNavItem(Route.Home.route, R.drawable.homenav, R.drawable.homenavactive, "Home")
-    object Calendar : BottomNavItem(Route.Calendar.route, R.drawable.calendarnav, R.drawable.calendarnavactive, "Calendar")
-    object Reels : BottomNavItem(Route.Reels.route, R.drawable.reelsnav, R.drawable.reelsnavactive, "Reels")
-    object History : BottomNavItem(Route.History.route, R.drawable.historynav, R.drawable.historynavactive, "History")
-    object Profile : BottomNavItem(Route.Profile.route, R.drawable.profilenav, R.drawable.profilenavactive, "Profile")
+    object Home : BottomNavItem("home", R.drawable.homenav, R.drawable.homenavactive, "Home")
+    object Calendar : BottomNavItem("calendar", R.drawable.calendarnav, R.drawable.calendarnavactive, "Calendar")
+    object Reels : BottomNavItem("reels", R.drawable.reelsnav, R.drawable.reelsnavactive, "Reels")
+    object History : BottomNavItem("history", R.drawable.historynav, R.drawable.historynavactive, "History")
+    object Profile : BottomNavItem("profile", R.drawable.profilenav, R.drawable.profilenavactive, "Profile")
 }
 
 @Composable
@@ -64,6 +62,4 @@ fun MyBottomNavigationBar(
             )
         }
     }
-
-
 }
